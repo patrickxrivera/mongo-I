@@ -8,12 +8,11 @@ module.exports = () => {
     });
   });
 
-  // beforeEach((done) => {
-  // const { drivers } = mongoose.connection.collections;
-  // drivers
-  //   .drop()
-  //   .then(() => drivers.ensureIndex({ 'geometry.coordinates': '2dsphere' }))
-  //   .then(() => done())
-  //   .catch(() => done());
-  // });
+  beforeEach((done) => {
+    const { friends } = mongoose.connection.collections;
+    friends
+      .drop()
+      .then(() => done())
+      .catch(() => done());
+  });
 };

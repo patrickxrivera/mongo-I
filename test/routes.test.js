@@ -58,11 +58,35 @@ describe('ROUTES', () => {
         .send(body);
 
       const newCount = await Friend.count();
-      console.log(res.body.error);
+
       expect(res).to.have.status(code.STATUS_USER_ERROR);
       expect(newCount).to.equal(oldCount);
       expect(res.body.error).to.equal(
-        'friend validation failed: firstName: Path `firstName` is required.'
+        'Please provide firstName, lastName and age for the friend.'
+      );
+    });
+
+    it('should throw an error when the age is invalid', async () => {
+      const oldCount = await Friend.count();
+
+      const route = '/api/friend/new';
+      const body = {
+        firstName: 'Joe',
+        lastName: 'Doe',
+        age: 130
+      };
+
+      const res = await chai
+        .request(app)
+        .post(route)
+        .send(body);
+
+      const newCount = await Friend.count();
+
+      expect(res).to.have.status(code.STATUS_USER_ERROR);
+      expect(newCount).to.equal(oldCount);
+      expect(res.body.error).to.equal(
+        'Please provide firstName, lastName and age for the friend.'
       );
     });
   });
