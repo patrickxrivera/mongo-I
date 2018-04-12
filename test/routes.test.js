@@ -105,4 +105,40 @@ describe('ROUTES', () => {
       expect(res.body[0]).to.include(sampleRes);
     });
   });
+
+  describe('GET /api/friends/:id', () => {
+    it('should return the friend with the given ID', async () => {
+      const sampleRes = { firstName: 'Joe', lastName: 'Doe', age: 14 };
+      const joe = new Friend(sampleRes);
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/${joe._id}`;
+
+      const res = await chai.request(app).get(route);
+
+      expect(res).to.have.status(code.STATUS_OK);
+      expect(res.body).to.be.a('object');
+      expect(res.body).to.include(sampleRes);
+    });
+
+    it('should return an error if the requested ID is not found', async () => {
+      const sampleRes = { firstName: 'Joe', lastName: 'Doe', age: 14 };
+      const joe = new Friend(sampleRes);
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/3`;
+
+      const res = await chai.request(app).get(route);
+
+      expect(res).to.have.status(code.STATUS_NOT_FOUND);
+      expect(res.body).to.be.a('object');
+      expect(res.body.error).to.be.a('string');
+    });
+  });
 });
