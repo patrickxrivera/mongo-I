@@ -4,7 +4,8 @@
   "description": "MongoDB I Project",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon ./index.js",
+    "test": "NODE_ENV=test nodemon --exec 'mocha -R min'"
   },
   "repository": {
     "type": "git",
@@ -18,9 +19,13 @@
   },
   "homepage": "https://github.com/LambdaSchool/Mongo-I#readme",
   "dependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "helmet": "^3.12.0"
+    "helmet": "^3.12.0",
+    "mocha": "^5.0.5",
+    "mongoose": "^5.0.14"
   },
   "devDependencies": {
     "nodemon": "^1.17.3"

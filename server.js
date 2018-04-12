@@ -1,16 +1,15 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const routes = require('./routes');
 
-const server = express();
+const app = express();
 
-server.use(helmet());
-server.use(cors());
-server.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-server.get('/', (req, res) => {
-  res.status(200).json({ api: 'running' });
-});
+routes(app);
 
-const port = process.env.PORT || 5000;
-server.listen(port, () => console.log(`\n=== API up on port: ${port} ===\n`));
+module.exports = app;
