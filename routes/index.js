@@ -6,4 +6,5 @@ const router = express.Router();
 module.exports = (app) => {
   app.get('/api', FriendsController.root);
   app.post('/api/friend/new', FriendsController.create);
+  app.get('/api/friends', FriendsController.read);
 };

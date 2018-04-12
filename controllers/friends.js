@@ -13,12 +13,15 @@ module.exports = {
     const [err, friend] = await to(Friend.create(friendProps));
 
     if (err) {
-      const errMsg =
-        'Please provide firstName, lastName and age for the friend.';
-      next(errMsg);
+      next(err);
       return;
     }
 
     res.status(code.STATUS_CREATED).send(friendProps);
+  },
+
+  async read(req, res, next) {
+    const [err, friends] = await to(Friend.find({}));
+    res.send(friends);
   }
 };

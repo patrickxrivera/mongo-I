@@ -12,9 +12,9 @@ const FriendSchema = new Schema({
     required: true
   },
   age: {
-    type: String,
-    minimum: 1,
-    maximum: 120,
+    type: Number,
+    min: 1,
+    max: 120,
     required: true
   },
   createdOn: {

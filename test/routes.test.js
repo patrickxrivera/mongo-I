@@ -61,9 +61,7 @@ describe('ROUTES', () => {
 
       expect(res).to.have.status(code.STATUS_USER_ERROR);
       expect(newCount).to.equal(oldCount);
-      expect(res.body.error).to.equal(
-        'Please provide firstName, lastName and age for the friend.'
-      );
+      expect(res.body.error).to.be.a('string');
     });
 
     it('should throw an error when the age is invalid', async () => {
@@ -73,7 +71,7 @@ describe('ROUTES', () => {
       const body = {
         firstName: 'Joe',
         lastName: 'Doe',
-        age: 130
+        age: -1
       };
 
       const res = await chai
@@ -85,9 +83,26 @@ describe('ROUTES', () => {
 
       expect(res).to.have.status(code.STATUS_USER_ERROR);
       expect(newCount).to.equal(oldCount);
-      expect(res.body.error).to.equal(
-        'Please provide firstName, lastName and age for the friend.'
-      );
+      expect(res.body.error).to.be.a('string');
+    });
+  });
+
+  describe('GET /api/friends', () => {
+    it('should return all friends', async () => {
+      const sampleRes = { firstName: 'Joe', lastName: 'Doe', age: 14 };
+      const joe = new Friend(sampleRes);
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = '/api/friends';
+
+      const res = await chai.request(app).get(route);
+
+      expect(res).to.have.status(code.STATUS_OK);
+      expect(res.body).to.be.a('array');
+      expect(res.body[0]).to.include(sampleRes);
     });
   });
 });

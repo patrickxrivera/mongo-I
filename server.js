@@ -14,8 +14,8 @@ app.use(express.json());
 routes(app);
 
 // Custom middleware for error handling
-app.use((errMsg, req, res, next) => {
-  res.status(code.STATUS_USER_ERROR).send({ error: errMsg });
+app.use((err, req, res, next) => {
+  res.status(code.STATUS_USER_ERROR).send({ error: err.message });
 });
 
 module.exports = app;
