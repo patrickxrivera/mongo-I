@@ -141,4 +141,127 @@ describe('ROUTES', () => {
       expect(res.body.error).to.be.a('string');
     });
   });
+
+  describe('DELETE /api/friends/:id', () => {
+    it('should delete the friend at the given ID', async () => {
+      const sampleRes = { firstName: 'Joe', lastName: 'Doe', age: 14 };
+      const joe = new Friend(sampleRes);
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const oldCount = await Friend.count();
+
+      const route = `/api/friends/${joe._id}`;
+
+      const res = await chai.request(app).delete(route);
+
+      const newCount = await Friend.count();
+
+      expect(res).to.have.status(code.STATUS_OK);
+      expect(newCount).to.equal(oldCount - 1);
+      expect(res.body.n).to.equal(1);
+    });
+
+    it('should return an error message when trying to delete with an invalid id', async () => {
+      const joe = new Friend({ firstName: 'Joe', lastName: 'Doe', age: 14 });
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const oldCount = await Friend.count();
+
+      const route = `/api/friends/3`;
+
+      const res = await chai.request(app).delete(route);
+
+      const newCount = await Friend.count();
+
+      expect(res).to.have.status(code.STATUS_NOT_FOUND);
+      expect(newCount).to.equal(oldCount);
+    });
+  });
+
+  describe('PUT /api/friends/:id', () => {
+    it('should update the friend with the given ID', async () => {
+      const joe = new Friend({ firstName: 'Joe', lastName: 'Doe', age: 14 });
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/${joe._id}`;
+      const updatedJoe = { firstName: 'Joseph', lastName: 'Franks', age: 22 };
+
+      const res = await chai
+        .request(app)
+        .put(route)
+        .send(updatedJoe);
+
+      expect(res).to.have.status(code.STATUS_OK);
+      expect(res.body).to.include(updatedJoe);
+    });
+
+    it('should return an error if the requested ID is not found', async () => {
+      const joe = new Friend({ firstName: 'Joe', lastName: 'Doe', age: 14 });
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/3`;
+      const updatedJoe = { firstName: 'Joseph', lastName: 'Franks', age: 22 };
+
+      const res = await chai
+        .request(app)
+        .put(route)
+        .send(updatedJoe);
+
+      expect(res).to.have.status(code.STATUS_NOT_FOUND);
+      expect(res.body).to.be.a('object');
+      expect(res.body.error).to.be.a('string');
+    });
+
+    it('should return an error if the age is out of range', async () => {
+      const joe = new Friend({ firstName: 'Joe', lastName: 'Doe', age: 14 });
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/${joe._id}`;
+      const updatedJoe = { firstName: 'Joseph', lastName: 'Franks', age: 200 };
+
+      const res = await chai
+        .request(app)
+        .put(route)
+        .send(updatedJoe);
+
+      expect(res).to.have.status(code.STATUS_NOT_FOUND);
+      expect(res.body).to.be.a('object');
+      expect(res.body.error).to.be.a('string');
+    });
+
+    it('should return an error if any properties are empty', async () => {
+      const joe = new Friend({ firstName: 'Joe', lastName: 'Doe', age: 14 });
+      const sam = new Friend({ firstName: 'Sam', lastName: 'Doe', age: 16 });
+      const beth = new Friend({ firstName: 'Beth', lastName: 'Doe', age: 22 });
+
+      await Promise.all([joe.save(), sam.save(), beth.save()]);
+
+      const route = `/api/friends/${joe._id}`;
+      const updatedJoe = { firstName: 'Joseph', lastName: '', age: 200 };
+
+      const res = await chai
+        .request(app)
+        .put(route)
+        .send(updatedJoe);
+
+      expect(res).to.have.status(code.STATUS_NOT_FOUND);
+      expect(res.body).to.be.a('object');
+      expect(res.body.error).to.be.a('string');
+    });
+  });
 });
